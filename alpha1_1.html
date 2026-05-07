@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha1 — The Future of AI Projects</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Josefin+Sans:wght@200;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cream: #f5f0e8;
+    --olive: #6b7c5c;
+    --olive-dark: #4e5c42;
+    --rust: #c0622a;
+    --charcoal: #2c2c2c;
+    --light-gray: #8a8a8a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Cormorant Garamond', serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* BG Pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(107,124,92,0.08) 1px, transparent 0);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(245,240,232,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(107,124,92,0.15);
+  }
+
+  .nav-logo {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--rust);
+    text-transform: lowercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.3s, color 0.3s;
+  }
+
+  .nav-links a:hover { opacity: 1; color: var(--rust); }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+
+  /* HERO */
+  #hero {
+    padding: 8rem 4rem 4rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .hero-tag {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--charcoal);
+    max-width: 800px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.4s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--olive);
+  }
+
+  .hero-body {
+    margin-top: 2.5rem;
+    max-width: 600px;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--light-gray);
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .hero-body p + p { margin-top: 1rem; }
+
+  .scroll-btn {
+    margin-top: 3rem;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--olive);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 1s 0.8s forwards;
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .scroll-btn:hover { background: var(--olive-dark); transform: translateY(3px); }
+  .scroll-btn svg { width: 20px; height: 20px; stroke: white; fill: none; }
+
+  /* HELPING HAND */
+  #helping {
+    padding: 4rem;
+    gap: 5rem;
+  }
+
+  .helping-image {
+    flex: 0 0 380px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.9s, transform 0.9s;
+  }
+
+  .helping-image.visible { opacity: 1; transform: translateX(0); }
+
+  .helping-image svg {
+    width: 220px;
+    height: 220px;
+  }
+
+  .helping-text {
+    flex: 1;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.9s 0.2s, transform 0.9s 0.2s;
+  }
+
+  .helping-text.visible { opacity: 1; transform: translateX(0); }
+
+  .helping-text h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--charcoal);
+    margin-bottom: 1.2rem;
+  }
+
+  .helping-text p {
+    font-size: 1.1rem;
+    color: var(--light-gray);
+    line-height: 1.8;
+  }
+
+  /* COMING SOON */
+  #coming-soon {
+    padding: 4rem;
+    gap: 5rem;
+    flex-direction: row-reverse;
+  }
+
+  .cs-image {
+    flex: 0 0 380px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.9s, transform 0.9s;
+  }
+
+  .cs-image.visible { opacity: 1; transform: translateX(0); }
+
+  .cs-poster {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #1a1a2e 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cs-poster::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 80%, rgba(192,98,42,0.3) 0%, transparent 60%);
+  }
+
+  .cs-poster-lines {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(255,255,255,0.05);
+    margin: 15px;
+  }
+
+  .cs-poster h3 {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 3rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #e8e0d0;
+    text-shadow: 0 0 40px rgba(192,98,42,0.5);
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .cs-poster span {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: rgba(232,224,208,0.6);
+    margin-top: 1rem;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cs-text {
+    flex: 1;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.9s 0.2s, transform 0.9s 0.2s;
+  }
+
+  .cs-text.visible { opacity: 1; transform: translateX(0); }
+
+  .cs-text h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    margin-bottom: 1.2rem;
+  }
+
+  .cs-text p {
+    font-size: 1.05rem;
+    color: var(--light-gray);
+    line-height: 1.85;
+  }
+
+  /* ABOUT */
+  #about {
+    background: var(--olive);
+    padding: 4rem;
+    gap: 5rem;
+  }
+
+  #about h2, #about p { color: #f0ece2; }
+
+  #about h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s, transform 0.9s;
+  }
+
+  #about h2.visible { opacity: 1; transform: translateY(0); }
+
+  #about p {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    opacity: 0.85;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s 0.2s, transform 0.9s 0.2s;
+  }
+
+  #about p.visible { opacity: 0.85; transform: translateY(0); }
+
+  .about-left { flex: 1; }
+
+  .about-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .about-badge {
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    border: 1px solid rgba(240,236,226,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.9s 0.4s;
+  }
+
+  .about-badge.visible { opacity: 1; }
+
+  .about-badge .initials {
+    font-size: 3rem;
+    font-weight: 300;
+    color: rgba(240,236,226,0.9);
+  }
+
+  .about-badge .role {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(240,236,226,0.5);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    background: var(--charcoal);
+    padding: 3rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    color: var(--rust);
+  }
+
+  .footer-text {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero { padding: 7rem 1.5rem 3rem; }
+    #helping, #coming-soon, #about { padding: 3rem 1.5rem; flex-direction: column !important; gap: 2.5rem; }
+    .helping-image, .cs-image { flex: none; width: 100%; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">alpha1</div>
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#helping">Vision</a></li>
+    <li><a href="#coming-soon">Launch</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-tag">The Future of AI Projects</div>
+  <h1 class="hero-title">alpha1 is the <em>future</em> of ai projects</h1>
+  <div class="hero-body">
+    <p>Hello everyone, my name is Atharv Sahu, and I am the founder of an upcoming startup focused on solving a meaningful real-world problem. We are building a solution that simplifies your problems by making it more efficient, accessible, and user-friendly.</p>
+    <p>Currently, we are in the pre-launch phase, validating our idea, understanding user needs, and refining our product to ensure strong market fit.</p>
+    <p>We believe there is a significant gap in this space — our approach is designed to address it in a smarter and more innovative way. Launching soon.</p>
+  </div>
+  <button class="scroll-btn" onclick="document.getElementById('helping').scrollIntoView({behavior:'smooth'})">
+    <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+</section>
+
+<!-- HELPING HAND -->
+<section id="helping">
+  <div class="helping-image">
+    <!-- Handshake SVG illustration -->
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Human hand -->
+      <g transform="translate(20, 60)">
+        <rect x="30" y="60" width="18" height="50" rx="9" fill="#e8c4a0"/>
+        <rect x="50" y="50" width="16" height="55" rx="8" fill="#e8c4a0"/>
+        <rect x="68" y="55" width="15" height="50" rx="7.5" fill="#e8c4a0"/>
+        <rect x="85" y="65" width="14" height="42" rx="7" fill="#e8c4a0"/>
+        <rect x="20" y="80" width="80" height="35" rx="14" fill="#e0b090"/>
+        <rect x="10" y="90" width="30" height="22" rx="11" fill="#e0b090"/>
+      </g>
+      <!-- Robot hand -->
+      <g transform="translate(100, 60)">
+        <rect x="20" y="60" width="18" height="50" rx="4" fill="#a0a8b0"/>
+        <rect x="40" y="50" width="16" height="55" rx="4" fill="#b0b8c0"/>
+        <rect x="58" y="55" width="15" height="50" rx="4" fill="#a8b0b8"/>
+        <rect x="75" y="65" width="14" height="42" rx="4" fill="#a0a8b0"/>
+        <rect x="10" y="80" width="80" height="35" rx="6" fill="#90a0b0"/>
+        <rect x="78" y="90" width="30" height="22" rx="4" fill="#90a0b0"/>
+        <!-- Circuit lines -->
+        <line x1="25" y1="90" x2="60" y2="90" stroke="#6080a0" stroke-width="1.5"/>
+        <line x1="25" y1="96" x2="50" y2="96" stroke="#6080a0" stroke-width="1.5"/>
+        <circle cx="62" cy="90" r="2.5" fill="#4070b0"/>
+        <circle cx="52" cy="96" r="2.5" fill="#4070b0"/>
+      </g>
+      <!-- Shake lines -->
+      <g stroke="#c0622a" stroke-width="2" opacity="0.7">
+        <line x1="95" y1="30" x2="105" y2="20"/>
+        <line x1="80" y1="25" x2="78" y2="12"/>
+        <line x1="115" y1="28" x2="120" y2="15"/>
+        <line x1="70" y1="35" x2="62" y2="28"/>
+        <line x1="128" y1="36" x2="136" y2="30"/>
+      </g>
+    </svg>
+  </div>
+  <div class="helping-text">
+    <h2>Your helping hand</h2>
+    <p>By the help of AI you can speed your work — smarter, faster, and more efficiently than ever before.</p>
+  </div>
+</section>
+
+<!-- COMING SOON -->
+<section id="coming-soon">
+  <div class="cs-image">
+    <div class="cs-poster">
+      <div class="cs-poster-lines"></div>
+      <h3>ALPHA1<br>SOON</h3>
+      <span>Coming Soon</span>
+    </div>
+  </div>
+  <div class="cs-text">
+    <h2>Something new is on the way</h2>
+    <p>We are building a smart and user-friendly solution designed to make life easier. Our journey has just begun — launching soon.</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-left">
+    <h2>About us</h2>
+    <p>Atharv Sahu, CEO & Founder, is building this venture with a vision to solve real problems through smart and efficient solutions. We aim to create a platform that delivers value and impact.</p>
+  </div>
+  <div class="about-right">
+    <div class="about-badge">
+      <div class="initials">AS</div>
+      <div class="role">CEO & Founder</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">alpha1</div>
+  <div class="footer-text">© 2025 Alpha1 · All rights reserved</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.helping-image, .helping-text, .cs-image, .cs-text, #about h2, #about p, .about-badge').forEach(el => el.classList.add('visible'));
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+  // Also observe individual elements
+  const elemObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.helping-image, .helping-text, .cs-image, .cs-text, .about-badge').forEach(el => elemObserver.observe(el));
+  document.querySelectorAll('#about h2, #about p').forEach(el => elemObserver.observe(el));
+</script>
+</body>
+</html>
