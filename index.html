@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpha1 — The Future of AI Projects</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;600;800&family=Space+Mono&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #020408;
+      --bg2: #060d14;
+      --neon: #00f0ff;
+      --neon2: #7b2fff;
+      --neon3: #ff2f7b;
+      --text: #e8f4ff;
+      --muted: #5a7a8a;
+      --card: rgba(0,240,255,0.04);
+      --border: rgba(0,240,255,0.12);
+      --glow: 0 0 30px rgba(0,240,255,0.25);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    #cursor {
+      position: fixed; width: 12px; height: 12px;
+      background: var(--neon); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+      box-shadow: 0 0 15px var(--neon), 0 0 30px var(--neon);
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid rgba(0,240,255,0.5); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.2s, height 0.2s;
+    }
+
+    /* CANVAS */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 6%;
+      background: rgba(2,4,8,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900; font-size: 1.3rem;
+      color: var(--neon);
+      text-shadow: 0 0 20px var(--neon);
+      letter-spacing: 3px;
+    }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.85rem; letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--neon);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--neon); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: transparent; border: 1px solid var(--neon);
+      color: var(--neon); padding: 10px 22px;
+      font-family: 'Orbitron', monospace; font-size: 0.75rem;
+      letter-spacing: 2px; cursor: none;
+      transition: all 0.3s;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .nav-cta:hover {
+      background: var(--neon); color: var(--bg);
+      box-shadow: var(--glow);
+    }
+
+    /* HERO */
+    #hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 6% 80px;
+      overflow: hidden;
+    }
+    .hero-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem; letter-spacing: 4px;
+      color: var(--neon); text-transform: uppercase;
+      border: 1px solid var(--border);
+      padding: 6px 18px; margin-bottom: 32px;
+      display: inline-block;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 8vw, 7rem);
+      line-height: 1.05;
+      margin-bottom: 12px;
+      animation: fadeUp 0.8s 0.15s ease both;
+    }
+    .hero-title .line1 { display: block; color: var(--text); }
+    .hero-title .line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--neon), var(--neon2), var(--neon3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(0,240,255,0.4));
+    }
+    .hero-sub {
+      font-size: 1.1rem; color: var(--muted); max-width: 560px;
+      line-height: 1.7; margin: 24px auto 48px;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+    .hero-btns {
+      display: flex; gap: 18px; flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.8s 0.45s ease both;
+    }
+    .btn-primary {
+      background: var(--neon); color: var(--bg);
+      border: none; padding: 16px 38px;
+      font-family: 'Orbitron', monospace; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 2px;
+      cursor: none; text-transform: uppercase;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 40px rgba(0,240,255,0.6);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text); padding: 16px 38px;
+      font-family: 'Orbitron', monospace; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 2px;
+      cursor: none; text-transform: uppercase;
+      transition: all 0.3s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-secondary:hover {
+      border-color: var(--neon); color: var(--neon);
+      box-shadow: var(--glow);
+    }
+    .hero-stats {
+      display: flex; gap: 60px; margin-top: 80px;
+      animation: fadeUp 0.8s 0.6s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Orbitron', monospace; font-size: 2rem;
+      font-weight: 900; color: var(--neon);
+      text-shadow: 0 0 20px var(--neon);
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 2px; margin-top: 4px; }
+
+    /* SCROLL INDICATOR */
+    .scroll-hint {
+      position: absolute; bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: fadeUp 1s 1s ease both;
+    }
+    .scroll-hint span { font-size: 0.65rem; letter-spacing: 3px; color: var(--muted); }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--neon), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+
+    /* SECTIONS COMMON */
+    section { position: relative; z-index: 1; padding: 100px 6%; }
+    .section-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 4px;
+      color: var(--neon); text-transform: uppercase;
+      margin-bottom: 16px; display: block;
+    }
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900; line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .section-sub {
+      color: var(--muted); font-size: 1rem;
+      line-height: 1.7; max-width: 600px;
+    }
+
+    /* FEATURES */
+    #features { background: var(--bg2); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; margin-top: 60px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 36px 28px;
+      position: relative; overflow: hidden;
+      transition: all 0.4s;
+    }
+    .feature-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--neon), var(--neon2));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s;
+    }
+    .feature-card:hover { border-color: rgba(0,240,255,0.35); transform: translateY(-6px); box-shadow: var(--glow); }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-icon {
+      font-size: 2rem; margin-bottom: 20px;
+      display: block;
+    }
+    .feature-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: 12px; color: var(--text);
+    }
+    .feature-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* TESTIMONIALS */
+    #testimonials { background: var(--bg); }
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px; margin-top: 60px;
+    }
+    .testi-card {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 32px 28px; position: relative;
+      transition: all 0.3s;
+    }
+    .testi-card:hover { border-color: rgba(123,47,255,0.4); box-shadow: 0 0 30px rgba(123,47,255,0.15); }
+    .testi-quote {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem; color: var(--neon2);
+      line-height: 1; margin-bottom: 16px;
+    }
+    .testi-text { font-size: 0.95rem; line-height: 1.7; color: var(--text); margin-bottom: 24px; }
+    .testi-author { display: flex; align-items: center; gap: 14px; }
+    .testi-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon), var(--neon2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace; font-weight: 900; font-size: 0.8rem;
+      color: var(--bg);
+    }
+    .testi-name { font-weight: 600; font-size: 0.9rem; }
+    .testi-role { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+    /* WAITLIST */
+    #waitlist {
+      background: var(--bg2);
+      text-align: center;
+    }
+    .waitlist-box {
+      max-width: 560px; margin: 0 auto;
+    }
+    .waitlist-form {
+      display: flex; gap: 0; margin-top: 40px;
+      border: 1px solid var(--border);
+    }
+    .waitlist-form input {
+      flex: 1; background: transparent;
+      border: none; outline: none;
+      padding: 18px 22px; color: var(--text);
+      font-family: 'Syne', sans-serif; font-size: 0.95rem;
+    }
+    .waitlist-form input::placeholder { color: var(--muted); }
+    .waitlist-form button {
+      background: var(--neon); color: var(--bg);
+      border: none; padding: 18px 28px;
+      font-family: 'Orbitron', monospace; font-weight: 700;
+      font-size: 0.75rem; letter-spacing: 2px;
+      cursor: none; text-transform: uppercase;
+      transition: all 0.3s; white-space: nowrap;
+    }
+    .waitlist-form button:hover { box-shadow: var(--glow); }
+    .waitlist-note { font-size: 0.75rem; color: var(--muted); margin-top: 14px; letter-spacing: 1px; }
+    #waitlist-success {
+      display: none; margin-top: 20px;
+      color: var(--neon); font-family: 'Space Mono', monospace;
+      font-size: 0.85rem; letter-spacing: 2px;
+    }
+
+    /* ABOUT */
+    #about { background: var(--bg); }
+    .about-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+    }
+    .about-visual {
+      position: relative; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .about-ring {
+      width: 260px; height: 260px; border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      animation: rotate 20s linear infinite;
+    }
+    .about-ring::before {
+      content: ''; position: absolute; inset: -1px;
+      border-radius: 50%; border: 1px solid transparent;
+      background: linear-gradient(var(--bg), var(--bg)) padding-box,
+                  linear-gradient(90deg, var(--neon), transparent, var(--neon2)) border-box;
+    }
+    .about-avatar-big {
+      width: 180px; height: 180px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon), var(--neon2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace; font-size: 3rem; font-weight: 900;
+      color: var(--bg); animation: rotate 20s linear infinite reverse;
+    }
+    .orbit-dot {
+      position: absolute; width: 8px; height: 8px;
+      background: var(--neon); border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon);
+      top: -4px; left: 50%; transform: translateX(-50%);
+    }
+    .about-content { }
+    .about-content p { color: var(--muted); line-height: 1.8; margin-bottom: 20px; }
+    .about-content strong { color: var(--neon); }
+
+    /* FOOTER */
+    footer {
+      position: relative; z-index: 1;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 40px 6%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 20px;
+    }
+    .footer-logo {
+      font-family: 'Orbitron', monospace; font-weight: 900;
+      color: var(--neon); font-size: 1rem; letter-spacing: 3px;
+    }
+    .footer-copy { font-size: 0.8rem; color: var(--muted); }
+
+    /* CHATBOT */
+    #chat-btn {
+      position: fixed; bottom: 32px; right: 32px; z-index: 200;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--neon); border: none;
+      cursor: none;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 30px rgba(0,240,255,0.5);
+      transition: all 0.3s;
+      font-size: 1.4rem;
+    }
+    #chat-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px rgba(0,240,255,0.8); }
+
+    #chat-window {
+      position: fixed; bottom: 106px; right: 32px; z-index: 200;
+      width: 380px; height: 520px;
+      background: #060d14;
+      border: 1px solid var(--border);
+      display: none; flex-direction: column;
+      box-shadow: 0 0 60px rgba(0,240,255,0.15);
+      overflow: hidden;
+    }
+    #chat-window.open { display: flex; }
+
+    .chat-header {
+      background: rgba(0,240,255,0.06);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .chat-header-left { display: flex; align-items: center; gap: 12px; }
+    .chat-dot { width: 8px; height: 8px; background: var(--neon); border-radius: 50%; box-shadow: 0 0 8px var(--neon); animation: blink 1.5s infinite; }
+    .chat-title { font-family: 'Orbitron', monospace; font-size: 0.85rem; font-weight: 700; color: var(--neon); }
+    .chat-subtitle { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+    .chat-close { background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: none; transition: color 0.2s; }
+    .chat-close:hover { color: var(--text); }
+
+    /* API KEY INPUT */
+    #api-setup {
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    #api-setup.hidden { display: none; }
+    #api-setup label { font-size: 0.7rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+    #api-key-input {
+      background: rgba(0,240,255,0.04); border: 1px solid var(--border);
+      color: var(--text); padding: 10px 14px;
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      outline: none; width: 100%;
+    }
+    #api-key-input:focus { border-color: var(--neon); }
+    #save-key-btn {
+      background: var(--neon); color: var(--bg); border: none;
+      padding: 10px; font-family: 'Orbitron', monospace;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+      cursor: none; text-transform: uppercase; transition: all 0.2s;
+    }
+    #save-key-btn:hover { box-shadow: var(--glow); }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 14px;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    .msg {
+      max-width: 80%; padding: 12px 16px;
+      font-size: 0.85rem; line-height: 1.5;
+      animation: fadeUp 0.3s ease;
+    }
+    .msg.bot {
+      background: rgba(0,240,255,0.07);
+      border: 1px solid var(--border);
+      align-self: flex-start; color: var(--text);
+      border-radius: 0 12px 12px 12px;
+    }
+    .msg.user {
+      background: var(--neon2);
+      align-self: flex-end; color: white;
+      border-radius: 12px 0 12px 12px;
+    }
+    .msg.typing { color: var(--muted); font-style: italic; }
+
+    .chat-input-area {
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0;
+    }
+    #chat-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); padding: 16px 18px;
+      font-family: 'Syne', sans-serif; font-size: 0.85rem;
+    }
+    #chat-input::placeholder { color: var(--muted); }
+    #chat-send {
+      background: transparent; border: none; border-left: 1px solid var(--border);
+      color: var(--neon); padding: 16px 20px;
+      font-size: 1.1rem; cursor: none; transition: all 0.2s;
+    }
+    #chat-send:hover { background: rgba(0,240,255,0.08); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.2; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: 30px; flex-wrap: wrap; justify-content: center; }
+      .about-inner { grid-template-columns: 1fr; }
+      .about-visual { order: -1; }
+      #chat-window { width: calc(100vw - 32px); right: 16px; }
+      .waitlist-form { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">ALPHA1</span>
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <span class="hero-tag">⚡ Next-Gen AI Platform — Launching Soon</span>
+  <h1 class="hero-title">
+    <span class="line1">WELCOME TO</span>
+    <span class="line2">ALPHA1</span>
+  </h1>
+  <p class="hero-sub">The future of AI-powered projects is here. Smarter workflows, faster execution, and intelligence that actually understands you.</p>
+  <div class="hero-btns">
+    <a href="#waitlist" class="btn-primary">Join the Waitlist</a>
+    <a href="#features" class="btn-secondary">Explore Features</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" data-count="500">0</div>
+      <div class="stat-label">Early Signups</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="12">0</div>
+      <div class="stat-label">AI Models</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="99">0</div>
+      <div class="stat-label">% Uptime</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <span class="section-tag reveal">// Core Capabilities</span>
+  <h2 class="section-title reveal">Built Different.<br/>Built for <span style="color:var(--neon)">Tomorrow.</span></h2>
+  <p class="section-sub reveal">Alpha1 combines cutting-edge AI with an intuitive interface to give you superpowers you never thought possible.</p>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <span class="feature-icon">🧠</span>
+      <div class="feature-title">Adaptive AI Engine</div>
+      <div class="feature-desc">Our AI learns your patterns and adapts in real time — giving smarter responses the more you use it.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">⚡</span>
+      <div class="feature-title">Lightning Execution</div>
+      <div class="feature-desc">Zero latency workflows. Your ideas go from thought to output in milliseconds, not minutes.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🔒</span>
+      <div class="feature-title">Privacy First</div>
+      <div class="feature-desc">End-to-end encrypted. Your data is yours alone. We never train on your inputs without consent.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🌐</span>
+      <div class="feature-title">Real-Time Web Intel</div>
+      <div class="feature-desc">Connected to live data streams. Alpha1 knows what's happening right now, not just what it was trained on.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🎯</span>
+      <div class="feature-title">Precision Automation</div>
+      <div class="feature-desc">Build complex automations with natural language. No code needed — just describe what you want.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🚀</span>
+      <div class="feature-title">One-Click Deploy</div>
+      <div class="feature-desc">Push your AI projects live instantly. From idea to production with a single click.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <span class="section-tag reveal">// Early Access Feedback</span>
+  <h2 class="section-title reveal">People Are <span style="color:var(--neon2)">Talking.</span></h2>
+  <p class="section-sub reveal">Beta testers are already calling Alpha1 the most powerful AI platform they've ever used.</p>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="testi-quote">"</div>
+      <div class="testi-text">I've tried every AI tool out there. Alpha1 is on a completely different level. It feels like the future, today.</div>
+      <div class="testi-author">
+        <div class="testi-avatar">RK</div>
+        <div>
+          <div class="testi-name">Rahul Kumar</div>
+          <div class="testi-role">Software Engineer, Bangalore</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-quote">"</div>
+      <div class="testi-text">The speed, the accuracy, the UI — everything is next level. I'm never going back to the old tools.</div>
+      <div class="testi-author">
+        <div class="testi-avatar">PS</div>
+        <div>
+          <div class="testi-name">Priya Sharma</div>
+          <div class="testi-role">Product Manager, Mumbai</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card reveal">
+      <div class="testi-quote">"</div>
+      <div class="testi-text">Alpha1 automated 3 hours of my daily work in the first week. Atharv is building something insane here.</div>
+      <div class="testi-author">
+        <div class="testi-avatar">AV</div>
+        <div>
+          <div class="testi-name">Arjun Verma</div>
+          <div class="testi-role">Startup Founder, Delhi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section id="waitlist">
+  <div class="waitlist-box reveal">
+    <span class="section-tag">// Exclusive Access</span>
+    <h2 class="section-title">Be First.<br/><span style="color:var(--neon)">Join the Waitlist.</span></h2>
+    <p class="section-sub" style="margin:0 auto">Get early access, founding member perks, and a lifetime discount. Limited spots available.</p>
+    <div class="waitlist-form">
+      <input type="email" id="email-input" placeholder="Enter your email address" />
+      <button onclick="joinWaitlist()">Join Now</button>
+    </div>
+    <p class="waitlist-note">🔒 No spam. Ever. Unsubscribe anytime.</p>
+    <div id="waitlist-success">✅ You're on the list! We'll be in touch soon.</div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-content reveal">
+      <span class="section-tag">// The Founder</span>
+      <h2 class="section-title">Built with<br/><span style="color:var(--neon)">Purpose.</span></h2>
+      <p>Hi, I'm <strong>Atharv Sahu</strong> — CEO & Founder of Alpha1. I started this with one goal: to build AI tools that actually solve real problems, not just demo well.</p>
+      <p>We're in pre-launch, validating hard, listening to real users, and building something that will genuinely change how people work with AI.</p>
+      <p>This isn't just a startup. <strong>This is the future.</strong></p>
+      <a href="#waitlist" class="btn-primary" style="margin-top:10px">Get Early Access →</a>
+    </div>
+    <div class="about-visual reveal">
+      <div class="about-ring">
+        <div class="orbit-dot"></div>
+        <div class="about-avatar-big">AS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">ALPHA1</span>
+  <span class="footer-copy">© 2025 Alpha1 · All rights reserved · Built by Atharv Sahu</span>
+</footer>
+
+<!-- CHAT BUTTON -->
+<button id="chat-btn" onclick="toggleChat()" title="Chat with Alpha1 AI">🤖</button>
+
+<!-- CHAT WINDOW -->
+<div id="chat-window">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-dot"></div>
+      <div>
+        <div class="chat-title">ALPHA1 AI</div>
+        <div class="chat-subtitle">Powered by Gemini</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+
+  <div id="api-setup">
+    <label>Gemini API Key</label>
+    <input type="password" id="api-key-input" placeholder="AIzaSyDsN9JZYuqvG7Uo15yPsy7HbWqQRQnAuuw" />
+    <button id="save-key-btn" onclick="saveApiKey()">Save & Start Chat</button>
+  </div>
+
+  <div class="chat-messages" id="chat-messages"></div>
+
+  <div class="chat-input-area">
+    <input type="text" id="chat-input" placeholder="Ask Alpha1 AI anything..." onkeydown="if(event.key==='Enter') sendMsg()" />
+    <button id="chat-send" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    setTimeout(() => {
+      ring.style.left = e.clientX + 'px';
+      ring.style.top = e.clientY + 'px';
+    }, 80);
+  });
+
+  // CANVAS PARTICLES
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 100; i++) {
+    particles.push({
+      x: Math.random() * 2000,
+      y: Math.random() * 2000,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.5 + 0.1
+    });
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0,240,255,${p.alpha})`;
+      ctx.fill();
+    });
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(0,240,255,0.03)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 80) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += 80) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  // SCROLL REVEAL
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // COUNT UP
+  const counters = document.querySelectorAll('[data-count]');
+  const countObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = +el.dataset.count;
+        let current = 0;
+        const step = target / 60;
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) { el.textContent = target + (target === 99 ? '%' : '+'); clearInterval(timer); }
+          else el.textContent = Math.floor(current) + (target === 99 ? '%' : '+');
+        }, 20);
+        countObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => countObserver.observe(c));
+
+  // WAITLIST
+  function joinWaitlist() {
+    const email = document.getElementById('email-input').value;
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email!');
+      return;
+    }
+    document.getElementById('waitlist-success').style.display = 'block';
+    document.getElementById('email-input').value = '';
+  }
+
+  // CHAT
+  let apiKey = '';
+  let chatOpen = false;
+  let chatHistory = [];
+
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    const win = document.getElementById('chat-window');
+    win.classList.toggle('open', chatOpen);
+    if (chatOpen && !apiKey) {
+      document.getElementById('api-setup').classList.remove('hidden');
+    }
+    if (chatOpen && apiKey && chatHistory.length === 0) {
+      addMsg('bot', "Hey! I'm Alpha1 AI, powered by Gemini. Ask me anything about our platform, AI, or just chat! 🚀");
+    }
+  }
+
+  function saveApiKey() {
+    const val = document.getElementById('api-key-input').value.trim();
+    if (!val) { alert('Please enter your Gemini API key!'); return; }
+    apiKey = val;
+    document.getElementById('api-setup').classList.add('hidden');
+    addMsg('bot', "Hey! I'm Alpha1 AI, powered by Gemini. Ask me anything about our platform, AI, or just chat! 🚀");
+  }
+
+  function addMsg(role, text) {
+    const msgs = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    if (role !== 'typing') chatHistory.push({ role: role === 'user' ? 'user' : 'model', parts: [{ text }] });
+  }
+
+  async function sendMsg() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    if (!apiKey) { document.getElementById('api-setup').classList.remove('hidden'); return; }
+    input.value = '';
+    addMsg('user', text);
+
+    const msgs = document.getElementById('chat-messages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'msg bot typing';
+    typingDiv.id = 'typing-indicator';
+    typingDiv.textContent = 'Alpha1 AI is thinking...';
+    msgs.appendChild(typingDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: {
+              parts: [{ text: "You are Alpha1 AI, the intelligent assistant for Alpha1 — a futuristic AI startup founded by Atharv Sahu. Be helpful, concise, and slightly futuristic in tone. Always promote Alpha1's vision of making AI accessible and powerful. Keep responses under 3 sentences unless asked for more detail." }]
+            },
+            contents: chatHistory.filter(m => m.role === 'user' || m.role === 'model')
+          })
+        }
+      );
+      const data = await response.json();
+      document.getElementById('typing-indicator')?.remove();
+      if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        addMsg('bot', data.candidates[0].content.parts[0].text);
+      } else {
+        addMsg('bot', 'Hmm, something went wrong. Check your API key or try again!');
+      }
+    } catch (e) {
+      document.getElementById('typing-indicator')?.remove();
+      addMsg('bot', 'Connection error. Please check your API key and internet connection.');
+    }
+  }
+</script>
+</body>
+</html>
